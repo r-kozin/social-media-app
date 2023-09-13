@@ -3,9 +3,9 @@ import { Avatar as ChakraAvatar } from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
 import { PROTECTED } from '../../lib/routes.jsx'
 
-export default function Avatar({user, size='xl'}) {
+export default function Avatar({user, size='xl', overrideAvatar = null}) {
     if(!user) return "Loading..."
   return (
-    <ChakraAvatar size={size} name={user.username} src={user.avatar} _hover={{cursor: "pointer", opacity: "80%"}} as={Link} to={`${PROTECTED}/profile/${user.id}`}/>
+    <ChakraAvatar size={size} name={user.username} src={overrideAvatar || user.avatar} _hover={{cursor: "pointer", opacity: "80%"}} as={Link} to={`${PROTECTED}/profile/${user.id}`}/>
   )
 }
