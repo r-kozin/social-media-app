@@ -6,6 +6,8 @@ import { uploadBytes } from "firebase/storage"
 import { useState } from "react"
 import { useToast } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
+import { useCollectionData } from "react-firebase-hooks/firestore"
+import { collection } from "firebase/firestore"
 
 export function useUser(id){
     const q = query(doc(db, "users", id))
@@ -59,4 +61,10 @@ export function useUpdateAvatar(uid){
     }
 
     return {setFile, updateAvatar, isLoading, fileURL: file && URL.createObjectURL(file)}
+}
+
+export function useGetAllUsers(){
+    const [users, isLoading] = useCollectionData(collection(db, "users"))
+    
+    return {users, isLoading}
 }
