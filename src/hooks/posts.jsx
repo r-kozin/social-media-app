@@ -9,6 +9,8 @@ import {
   arrayRemove,
   arrayUnion,
   where,
+  deleteDoc,
+  getDocs,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { uuidv4 } from "@firebase/util";
@@ -75,8 +77,35 @@ export function useToggleLike({ id, isLiked, uid }) {
 
 export function useDeletePost({ id }) {
   const [isLoading, setLoading] = useState(false);
+  const toast = useToast();
 
-  async function deletePost() {}
+  async function deletePost() {
+    const res = window.confirm("Are you sure you want to delete this post?");
+    if (res){
+        setLoading(true);
+        //delete post document
+        await deleteDoc(doc(db, "posts", id));
+        //delete comments
+
+        async function deleteComments(docRef){
+          deleteDoc(docRef)
+        }
+
+        const q = query(collection(db, "comments"), where("postID", "==", id));
+        const querySnapshot = await getDocs(q)
+        querySnapshot.forEach(doc => deleteComments(doc.ref))
+        
+        toast({
+          title: "Post deleted successfully!",
+          status: "info",
+          duration: 5000,
+          position: "top",
+          isClosable: true,
+        });
+        setLoading(false);
+    }
+
+  }
 
   return { deletePost, isLoading };
 }
