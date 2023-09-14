@@ -1,22 +1,55 @@
 import { Box, Button, Code, Stack } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { USERS, PROTECTED } from "../../lib/routes.jsx";
 import { useAuth } from "../../hooks/auth.jsx";
-import Avatar from '../profile/Avatar.jsx'
+import Avatar from "../profile/Avatar.jsx";
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function ActiveUser() {
-    const {user, isLoading} = useAuth()
+  const { user, isLoading } = useAuth();
+  const { pathname } = useLocation();
+  const [sidebarButtonText, setSidebarButtonText] = useState("Profile")
+  const [onProfile, setOnProfile] = useState(false)
+  const navigate = useNavigate();
 
-    if (isLoading) {
-        return <div>Loading...</div>
+  useEffect(() => {
+    if (!isLoading && pathname.startsWith("/protected/profile/" + user.id)) {
+      setSidebarButtonText("Edit Profile")
+      setOnProfile(true)
     }
+    if (!isLoading && !pathname.startsWith("/protected/profile/" + user.id)) {
+      setSidebarButtonText("View Profile")
+      setOnProfile(false)
+
+    }
+  }, [pathname, user, isLoading]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  function handleSidebarButtonClick() {
+    if (onProfile) {
+      console.log("edit profile button clicked")
+    } else {
+      navigate(`${PROTECTED}/profile/${user.id}`)
+    }
+  }
 
   return (
-    <Stack align={'center'} spacing={'5'} my={'8'}>
-        <Avatar user={user} />
+    <Stack align={"center"} spacing={"5"} my={"8"}>
+      <Avatar user={user} />
       <Code>@{user.username}</Code>
-      <Button colorScheme={'teal'} width={'full'} as={Link} to={`${PROTECTED}/profile/${user.id}`}>Edit Profile</Button>
+      <Button
+        colorScheme={"teal"}
+        width={"full"}
+        onClick={handleSidebarButtonClick}
+      >
+        {sidebarButtonText}
+      </Button>
     </Stack>
   );
 }
