@@ -6,6 +6,7 @@ import { Dashboard } from "../components/dashboard/Dashboard";
 import { Comments } from "../components/comments/Comments";
 import { Profile } from "../components/profile/Profile";
 import { Users } from "../components/users/Users";
+import { EditProfileForm } from "../components/profile/EditProfileForm";
 
 export const ROOT = "/";
 export const LOGIN = "/login";
@@ -15,6 +16,7 @@ export const PROTECTED = "/protected";
 export const DASHBOARD = "/protected/dashboard";
 export const USERS = "/protected/users";
 export const PROFILE = "/protected/profile/:id";
+export const EDITPROFILE = "/protected/profile/:id/edit";
 export const COMMENTS = "/protected/comments/:id"
 
 export const routes = createBrowserRouter([
@@ -40,6 +42,10 @@ export const routes = createBrowserRouter([
       {
         path: COMMENTS,
         element: <Comments />,
+      },
+      {
+        path: EDITPROFILE,
+        element: <EditProfileForm />,
       },
     ],
   },
