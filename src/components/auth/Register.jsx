@@ -51,7 +51,7 @@ export const Register = () => {
               {...register("username", usernameValidate)}
             />
             <FormErrorMessage>
-              {errors.email && errors.username.message}
+              {errors.username && errors.username.message}
             </FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={errors.email} py={"2"}>
