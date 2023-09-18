@@ -1,9 +1,4 @@
-import {
-  useAuthState,
-  useSignOut,
-  useUpdateEmail,
-  useUpdatePassword,
-} from "react-firebase-hooks/auth";
+import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
 import { auth, db } from "../lib/firebase";
 import { DASHBOARD, LOGIN } from "../lib/routes";
 import {
@@ -155,6 +150,16 @@ export function useLogout() {
       });
       navigate(LOGIN);
     } // else: show error [signOut() returns false if failed]
+    else {
+      toast({
+        title: "Log Out Failed",
+        description: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+    }
   }
   return { logout, isLoading };
 }
@@ -164,11 +169,11 @@ export function useEditProfile() {
   const toast = useToast();
   const navigate = useNavigate();
 
-  async function editProfile({ username, uid, redirectTo = DASHBOARD, }) {
+  async function editProfile({ username, uid, redirectTo = DASHBOARD }) {
     setLoading(true);
     const usernameExists = await isUsernameAvailable(username);
 
-    if (!usernameExists) {
+    if (!usernameExists) { //check if username exists before continuing
       toast({
         title: "Username Exists",
         description: "Please choose another username.",
@@ -177,10 +182,10 @@ export function useEditProfile() {
         isClosable: true,
         position: "top",
       });
-      setLoading(false);
+      setLoading(false); //setloading false and show toast if username exists
     } else {
       try {
-        await updateDoc(doc(db, "users", uid), {
+        await updateDoc(doc(db, "users", uid), { //update doc instead of 'setDoc' so it only updates the fields and doesn't delete the rest
           username: username.toLowerCase(),
         });
         toast({
@@ -191,8 +196,7 @@ export function useEditProfile() {
           isClosable: true,
           position: "top",
         });
-
-        navigate(redirectTo);
+        navigate(redirectTo); // navigate to dashboard on success
       } catch (error) {
         toast({
           title: "Update Failed",

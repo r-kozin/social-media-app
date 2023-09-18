@@ -12,7 +12,6 @@ import { useToggleLike, useDeletePost } from "../../hooks/posts";
 import { Link } from "react-router-dom";
 import { PROTECTED } from "../../lib/routes";
 import { useGetComments } from "../../hooks/comments";
-import { useForm } from "react-hook-form";
 
 export default function Actions({ post }) {
   const { id, likes, uid } = post;
@@ -47,14 +46,13 @@ export default function Actions({ post }) {
       <Flex alignItems={"center"} ml={"2"}>
         <IconButton
           as={Link}
-          to={`${PROTECTED}/comments/${id}`}
+          to={`${PROTECTED}/comments/${id}`} // /comments/:id => /comments/123 || using as Link to instead of onClick
           size="md"
           colorScheme="teal"
           variant={"ghost"}
           icon={comments?.length === 0 ? <FaRegCommentAlt /> : <FaCommentAlt />}
           isRound
-          // onClick={toggleLike}
-          // isLoading={likeLoading || userLoading}
+          isLoading={commentLoading || userLoading}
         />
         {comments?.length}
       </Flex>
@@ -66,7 +64,6 @@ export default function Actions({ post }) {
           size="md"
           colorScheme="red"
           variant={"ghost"}
-          // icon={isLiked ? <FaRegCommentAlt /> : <FaCommentAlt />}
           icon={<FaTrash />}
           isRound
           onClick={deletePost}

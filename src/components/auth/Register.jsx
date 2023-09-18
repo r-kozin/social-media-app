@@ -14,14 +14,17 @@ import { Link as RouterLink } from "react-router-dom";
 import { DASHBOARD, LOGIN } from "../../lib/routes.jsx";
 import { useRegister } from "../../hooks/auth.jsx";
 import { useForm } from "react-hook-form";
-import { emailValidate, passwordValidate, usernameValidate } from "../../utils/form-validate.jsx";
+import {
+  emailValidate,
+  passwordValidate,
+  usernameValidate,
+} from "../../utils/form-validate.jsx";
 
 export const Register = () => {
   const { register: signup, isLoading } = useRegister();
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm();
 
@@ -51,7 +54,7 @@ export const Register = () => {
               {...register("username", usernameValidate)}
             />
             <FormErrorMessage>
-              {errors.username && errors.username.message}
+              {errors.username ? errors.username.message : null}
             </FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={errors.email} py={"2"}>
@@ -62,7 +65,7 @@ export const Register = () => {
               {...register("email", emailValidate)}
             />
             <FormErrorMessage>
-              {errors.email && errors.email.message}
+              {errors.email ? errors.email.message : null}
             </FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={errors.password} py={"2"}>
@@ -73,7 +76,7 @@ export const Register = () => {
               {...register("password", passwordValidate)}
             />
             <FormErrorMessage>
-              {errors.password && errors.password.message}
+              {errors.password ? errors.password.message : null}
             </FormErrorMessage>
           </FormControl>
           <Button

@@ -3,26 +3,18 @@ import {
   Button,
   FormControl,
   FormLabel,
-  HStack,
-  Modal,
   FormErrorMessage,
   Center,
   Heading,
   Input,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Avatar from "./Avatar";
 import { useAuth, useEditProfile } from "../../hooks/auth";
 import { useLocation, useNavigate } from "react-router-dom";
-import { DASHBOARD, PROFILE } from "../../lib/routes";
+import { DASHBOARD } from "../../lib/routes";
 import { useForm } from "react-hook-form";
-import {
-  emailValidate,
-  passwordValidate,
-  usernameValidate,
-} from "../../utils/form-validate";
-import { useToast } from "@chakra-ui/react";
-import isUsernameAvailable from "../../utils/isUsernameAvailable";
+import { usernameValidate } from "../../utils/form-validate";
 
 export const EditProfileForm = () => {
   const { user, isLoading: authLoading } = useAuth();
@@ -32,7 +24,6 @@ export const EditProfileForm = () => {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm();
 
@@ -52,7 +43,7 @@ export const EditProfileForm = () => {
     });
   }
 
-  console.log(errors)
+  console.log(errors);
 
   return (
     <Center w={"100%"} h={"100vh"}>
