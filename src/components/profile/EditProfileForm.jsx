@@ -5,48 +5,97 @@ import {
   FormLabel,
   HStack,
   Modal,
+  FormErrorMessage,
+  Center,
+  Heading,
+  Input,
 } from "@chakra-ui/react";
-import {
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-} from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "./Avatar";
-import { useAuth } from "../../hooks/auth";
-import { useUpdateAvatar } from "../../hooks/users";
+import { useAuth, useEditProfile } from "../../hooks/auth";
+import { useLocation, useNavigate } from "react-router-dom";
+import { DASHBOARD, PROFILE } from "../../lib/routes";
+import { useForm } from "react-hook-form";
+import {
+  emailValidate,
+  passwordValidate,
+  usernameValidate,
+} from "../../utils/form-validate";
+import { useToast } from "@chakra-ui/react";
+import isUsernameAvailable from "../../utils/isUsernameAvailable";
 
 export const EditProfileForm = () => {
   const { user, isLoading: authLoading } = useAuth();
+  const { pathname } = useLocation();
+  const { editProfile, isLoading: editIsLoading } = useEditProfile();
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  useEffect(() => {
+    if (!authLoading && !pathname.includes(user.id)) {
+      navigate(DASHBOARD);
+    }
+  }, [pathname, user, authLoading]);
 
   if (authLoading) return "Loading...";
 
-  function handleChange(e) {
-    // setFile(e.target.files[0]);
+  async function handleEdit(data) {
+    editProfile({
+      username: data.username,
+      uid: user.id,
+      redirectTo: DASHBOARD,
+    });
   }
 
+  console.log(errors)
+
   return (
-    <Box>
-        <HStack spacing={5}>
+    <Center w={"100%"} h={"100vh"}>
+      <Box
+        mx={"1"}
+        w={"500px"}
+        maxW={"full"}
+        p={"9"}
+        borderWidth={"1px"}
+        borderRadius={"lg"}
+      >
+        <Heading mb={"4"} size={"lg"} textAlign={"center"}>
+          Edit Profile
+        </Heading>
+        <Center>
           <Avatar user={user} />
-          <FormControl py="4">
-            <FormLabel htmlFor="picture">Change avatar</FormLabel>
-            <input type="file" accept="image/*" onChange={handleChange} />
-            {/* <EditProfileForm /> */}
+        </Center>
+
+        <form onSubmit={handleSubmit(handleEdit)}>
+          <FormControl py={"2"} isInvalid={errors.username}>
+            <FormLabel>Username</FormLabel>
+            <Input
+              placeholder="username"
+              defaultValue={user.username}
+              {...register("username", usernameValidate)}
+            />
+            <FormErrorMessage>
+              {errors.username ? errors.username.message : null}
+            </FormErrorMessage>
           </FormControl>
-        </HStack>
-        <Button
-          colorScheme="teal"
-          loadingText="Uploading"
-          w={"25%"}
-          my={"6"}
-        //   onClick={updateAvatar}
-        //   isLoading={fileLoading}
-        >
-          Save
-        </Button>
-    </Box>
+          <Button
+            type={"submit"}
+            colorScheme={"teal"}
+            w={"full"}
+            mt={"4"}
+            isLoading={editIsLoading}
+            loadingText={"Updating Profile"}
+          >
+            {" "}
+            Save{" "}
+          </Button>
+        </form>
+      </Box>
+    </Center>
   );
 };

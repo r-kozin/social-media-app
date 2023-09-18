@@ -1,4 +1,9 @@
-import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
+import {
+  useAuthState,
+  useSignOut,
+  useUpdateEmail,
+  useUpdatePassword,
+} from "react-firebase-hooks/auth";
 import { auth, db } from "../lib/firebase";
 import { DASHBOARD, LOGIN } from "../lib/routes";
 import {
@@ -8,7 +13,7 @@ import {
 import { useEffect, useState } from "react";
 import { useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { setDoc, doc, getDoc } from "firebase/firestore";
+import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import isUsernameAvailable from "../utils/isUsernameAvailable";
 
 export function useAuth() {
@@ -101,6 +106,7 @@ export function useRegister() {
         await setDoc(doc(db, "users", res.user.uid), {
           id: res.user.uid,
           username: username.toLowerCase(),
+          email: email.toLowerCase(),
           avatar: "",
           date: Date.now(),
         });
@@ -151,4 +157,55 @@ export function useLogout() {
     } // else: show error [signOut() returns false if failed]
   }
   return { logout, isLoading };
+}
+
+export function useEditProfile() {
+  const [isLoading, setLoading] = useState(false);
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  async function editProfile({ username, uid, redirectTo = DASHBOARD, }) {
+    setLoading(true);
+    const usernameExists = await isUsernameAvailable(username);
+
+    if (!usernameExists) {
+      toast({
+        title: "Username Exists",
+        description: "Please choose another username.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+      setLoading(false);
+    } else {
+      try {
+        await updateDoc(doc(db, "users", uid), {
+          username: username.toLowerCase(),
+        });
+        toast({
+          title: "Profile Updated",
+          description: "You have successfully updated your profile.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "top",
+        });
+
+        navigate(redirectTo);
+      } catch (error) {
+        toast({
+          title: "Update Failed",
+          description: error.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top",
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+  }
+  return { editProfile, isLoading };
 }

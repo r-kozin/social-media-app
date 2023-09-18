@@ -12,6 +12,7 @@ import { useToggleLike, useDeletePost } from "../../hooks/posts";
 import { Link } from "react-router-dom";
 import { PROTECTED } from "../../lib/routes";
 import { useGetComments } from "../../hooks/comments";
+import { useForm } from "react-hook-form";
 
 export default function Actions({ post }) {
   const { id, likes, uid } = post;
