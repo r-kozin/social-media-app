@@ -8,16 +8,33 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalHeader,
-  ModalOverlay
+  ModalOverlay,
 } from "@chakra-ui/react";
 import React from "react";
-import Avatar from "./Avatar";
 import { useAuth } from "../../hooks/auth";
-import { useUpdateAvatar } from "../../hooks/users";
+import { useAddPostImage } from "../../hooks/posts";
+import Avatar from "../profile/Avatar";
 
-export const EditProfile = ({ isOpen, onClose }) => {
+export const AddImage = ({ isOpen, onClose, setPostImage, setPostImageID }) => {
   const { user, isLoading: authLoading } = useAuth();
-  const {setFile, updateAvatar, isLoading: fileLoading, fileURL} = useUpdateAvatar(user?.id)
+  const {
+    setFile,
+    addPostImage,
+    isLoading: fileLoading,
+    fileURL,
+  } = useAddPostImage(user?.id);
+
+ async function handleAddPostImage(){
+  try{
+  const postImageURL = await addPostImage();
+  console.log("Post Image URL:", postImageURL.postImageURL, "Post Image ID:", postImageURL.imageID);
+  setPostImage(postImageURL.postImageURL);
+  setPostImageID(postImageURL.imageID);
+  onClose();
+  } catch (err) {
+    console.log(err);
+  }
+ }
 
   if (authLoading) return "Loading...";
 
@@ -29,26 +46,27 @@ export const EditProfile = ({ isOpen, onClose }) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Edit Profile</ModalHeader>
+        <ModalHeader>Upload Image</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <HStack spacing={5}>
-            <Avatar user={user} overrideAvatar={fileURL} />
+            <Avatar user={user} />
             <FormControl py="4">
-              <FormLabel htmlFor="picture">Change avatar</FormLabel>
+              <FormLabel htmlFor="picture">Add image</FormLabel>
               <input type="file" accept="image/*" onChange={handleChange} />
-              {/* <EditProfileForm /> */}
             </FormControl>
           </HStack>
+          {/* preview uploaded image*/}
+           {fileURL && <img src={fileURL} alt="preview" />}
           <Button
             colorScheme="teal"
             loadingText="Uploading"
             w={"full"}
             my={"6"}
-            onClick={updateAvatar}
+            onClick={handleAddPostImage}
             isLoading={fileLoading}
           >
-            Save
+            Add Image
           </Button>
         </ModalBody>
       </ModalContent>

@@ -19,14 +19,15 @@ export const Profile = () => {
 
   if (userLoading) return "Loading...";
 
-  let totalLikes = 0
-  posts.forEach(post => {
-    post.likes.forEach(like => {
-      totalLikes++
-    })
-  })
-  console.log(totalLikes);
-
+  let totalLikes = 0;
+  if (!postsLoading) {
+    posts.forEach((post) => {
+      post.likes.forEach((like) => {
+        totalLikes++;
+      });
+    });
+    console.log(totalLikes);
+  }
   return (
     <Stack spacing={5}>
       <Flex p={["4", "6"]} pos={"relative"} align={"center"}>
